@@ -1,4 +1,4 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit';
 import axios from 'axios';
 
 interface Post {
@@ -32,6 +32,14 @@ export const createPost = createAsyncThunk(
     return response.data;
   },
 );
+export const updateExistingPost = createAsyncThunk(
+  'posts/updateExistingPost',
+  async ({ id, updatedPost }: { id: number; updatedPost: Post }) => {
+    const response = await axios.put(`https://jsonplaceholder.typicode.com/posts/${id}`, updatedPost);
+    return response.data;
+  }
+);
+
 
 const postsSlice = createSlice({
   name: 'posts',
@@ -41,7 +49,7 @@ const postsSlice = createSlice({
     error: null as string | null,
   },
   reducers: {
-    updatePost: (state, action) => {
+    updatePost: (state, action: PayloadAction<{id: number, title: string, body: string}>) => {
       const {id, title, body} = action.payload;
       const postIndex = state.posts.findIndex(post => post.id === id);
       if (postIndex !== -1) {
@@ -76,6 +84,13 @@ const postsSlice = createSlice({
       })
       .addCase(createPost.fulfilled, (state, action) => {
         state.posts.push(action.payload);
+      })
+      .addCase(updateExistingPost.fulfilled, (state, action) => {
+        const { id, title, body } = action.payload;
+        const postIndex = state.posts.findIndex(post => post.id === id);
+        if (postIndex !== -1) {
+          state.posts[postIndex] = { id, title, body };
+        }
       });
   },
 });

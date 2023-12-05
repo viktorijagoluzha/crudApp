@@ -21,7 +21,11 @@ const Home: React.FC<HomeScreenProps> = ({navigation}: any) => {
   const status = useSelector((state: RootState) => state.posts.status);
   const error = useSelector((state: RootState) => state.posts.error);
 
-  const [selectedPost, setSelectedPost] = useState<{id: number; title: string; body: string} | null>(null);
+  const [selectedPost, setSelectedPost] = useState<{
+    id: number;
+    title: string;
+    body: string;
+  } | null>(null);
 
   const [isDeletePostModalVisible, setDeletePostModalVisible] = useState(false);
 
@@ -111,8 +115,7 @@ const Home: React.FC<HomeScreenProps> = ({navigation}: any) => {
       <FlatList
         data={posts}
         renderItem={renderItem}
-        keyExtractor={(item) => (item.id ?? '').toString()}
-
+        keyExtractor={item => (item.id ?? '').toString()}
       />
       {selectedPost && (
         <DeletePost
